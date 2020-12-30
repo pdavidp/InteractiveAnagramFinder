@@ -35,6 +35,10 @@ public class WordPool {
      * @return - WordPool
      */
     public WordPool getWordPool(int startingIndex, int endingIndex) {
+        if (startingIndex > endingIndex) {
+            throw new RuntimeException("starting index is higher than ending index");
+        }
+
         //TODO: Is ArrayList the correct data structure? If I used List, we could use subList()
         ArrayList<Word> tempList = new ArrayList<>();
         for (int i = startingIndex; i < list.size() && i <=endingIndex; i++) {

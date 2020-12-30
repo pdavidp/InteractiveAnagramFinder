@@ -7,14 +7,12 @@ class Anagram {
     private static final int NUMBEROFROWS = 5;
     private static final int NUMBEROFCOLUMNS = 5;
     private static final String WORD_NOT_FOUND = "Your word is not in the remaining letters.";
-    private static final String SHOWING_FROM_TO = "Showing words %s to %s.";
-    private boolean complete;
+    private static final String SHOWING_FROM_TO = "Showing words %s to %s of %s.";
+    private boolean resetLastOption, complete;
     private int currentLetterCount;
-
     private Word remainingLetters = new Word();
     private WordPool availableOptions = new WordPool();
     private WordPool wordsSelected = new WordPool();
-    private boolean resetLastOption = false;
 
     Anagram(Word input) throws IOException {
         remainingLetters.setLetters(input.getLetters().replaceAll(" ", ""));
@@ -22,6 +20,7 @@ class Anagram {
         availableOptions.buildDictionary();
         availableOptions.filterList(remainingLetters);
         currentLetterCount = 0;
+        resetLastOption = true;
     }
 
     /**
@@ -36,17 +35,19 @@ class Anagram {
             currentLetterCount = 0;
             resetLastOption = false;
         } else {
-            currentLetterCount = currentWord;
+            // Add one so you don't show the last option twice (ie 1-25, and 25-50)
+            currentLetterCount = currentWord + 1;
         }
 
         final int pageSize = NUMBEROFCOLUMNS*NUMBEROFROWS - 1;
-        if (availableOptions.getList().size() < currentLetterCount + pageSize) {
+        final int listSize = availableOptions.getList().size();
+        if (listSize < currentLetterCount + pageSize) {
             // nearing the end of the list
-            showTo = availableOptions.getList().size();
-            System.out.printf(SHOWING_FROM_TO + "\n", "1", showTo);
+            showTo = listSize;
+            System.out.printf(SHOWING_FROM_TO + "\n", "1", showTo, listSize);
         } else {
             showTo = currentLetterCount + pageSize;
-            System.out.printf(SHOWING_FROM_TO + "Enter \".\" to show more.\n", currentLetterCount + 1, showTo + 1);
+            System.out.printf(SHOWING_FROM_TO + " Enter \".\" to show more.\n", currentLetterCount + 1, showTo + 1, listSize);
         }
 
         WordPool optionsToShow = availableOptions.getWordPool(currentLetterCount,showTo);
